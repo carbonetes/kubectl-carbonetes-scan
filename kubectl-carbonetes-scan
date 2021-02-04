@@ -17,13 +17,6 @@ Run "kubectl carbonetes-scan --help", to see the full list of commands
 EOF
 }
 
-unknown() {
-  echo >&2 "${1}"
-  cat <<EOF
-Run "kubectl carbonetes-scan --help", to see the full list of commands
-EOF
-}
-
 usage() {
     local SELF
     SELF="kubectl carbonetes-scan"
@@ -433,7 +426,7 @@ main() {
             *)
                 # check if there is any pod running
                 is_running
-                unknown "Unknown command \"$1\""
+                error "Unknown command \"$1\""
                 exit
                 ;;
         esac
