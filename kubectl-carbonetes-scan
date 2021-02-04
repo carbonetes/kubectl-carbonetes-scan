@@ -13,20 +13,20 @@ version="v1.0.0"
 error() {
     echo >&2 "${1}"
     cat <<EOF
-Run "kubectl carbonetes scan --help", to see the full list of commands
+Run "kubectl carbonetes-scan --help", to see the full list of commands
 EOF
 }
 
 unknown() {
   echo >&2 "${1}"
   cat <<EOF
-Run "kubectl carbonetes scan --help", to see the full list of commands
+Run "kubectl carbonetes-scan --help", to see the full list of commands
 EOF
 }
 
 usage() {
     local SELF
-    SELF="kubectl carbonetes scan"
+    SELF="kubectl carbonetes-scan"
     echo ""
     echo -e "\033[32mCarbonetes Scan: Security Tool for kubectl and oc\033[0m";
     cat <<EOF
@@ -407,17 +407,17 @@ main() {
                 shift
                 ;;
             -r | --registry)
-                shift
+                is_running
                 export REGISTRY_URI=$1
                 shift
                 ;;
             -u | --username)
-                shift
+                is_running
                 export CARBONETES_USERNAME=$1
                 shift
                 ;;
             -p | --password)
-                shift
+                is_running
                 export CARBONETES_PASSWORD=$1
                 shift
                 ;;

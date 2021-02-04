@@ -2,14 +2,14 @@
 
 # :bulb: Overview
 
-**Carbonetes Scan** provides comprehensive container analysis and policy evaluation as a fully managed service. Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA), license types, and secrets.
+**carbonetes-scan** provides comprehensive container analysis and policy evaluation as a fully managed service. Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA), license types, and secrets.
 
 :pushpin: To know more about Carbonetes, check [our website](https://carbonetes.com).
 
-# `carbonetes scan`: Security Tool for kubectl and oc
+# `carbonetes-scan`: Container Security Tool for kubectl and oc
 
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/carbonetes/kubectl-carbonetes-scan?sort=v1.0.0&style=plastic)
-<!-- ![GitHub stars](https://img.shields.io/github/stars/ahmetb/kubectx.svg?label=github%20stars) -->
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/carbonetes/kubectl-carbonetes-scan)
+![GitHub](https://img.shields.io/github/license/carbonetes/kubectl-carbonetes-scan)
 ![Proudly written in Bash](https://img.shields.io/badge/written%20in-bash-ff69b4.svg)
 
 This repository provides `carbonetes-scan` tool.
@@ -26,7 +26,7 @@ carbonetes-scan is a tool that seamlessly integrates comprehensive container ana
 ## :pencil: Usage
 
 ```sh
-~ % kubectl carbonetes scan --help
+~ % kubectl carbonetes-scan --help
 
 Carbonetes Scan: Security Tool for kubectl and oc
 
@@ -35,7 +35,7 @@ Carbonetes analyzes your container images for native code vulnerabilities, softw
 license types, and secrets.
 
 Usage:
-    kubectl carbonetes scan [flags]
+    kubectl carbonetes-scan [flags]
 
 Flags:
   -g, --get-all-images      : List all the unique images inside your cluster
@@ -96,11 +96,12 @@ _\* = required inputs._
 
 You can install kubectl-carbonetes-scan using [Krew](https://krew.sigs.k8s.io/), a kubectl plugin manager. `Krew` itself is also a plugin on kubectl. You can easily [install](https://krew.sigs.k8s.io/docs/user-guide/setup/install/) it with only a few steps, available on `MacOS`, `Linux`, and `Windows`.
 
+### Example:
 ```sh
 $ kubectl krew install carbonetes-scan
 ```
 
-You can verify the installation using the command `kubectl carbonetes scan --version` to see the version of the installed kubectl plugin.
+You can verify the installation using the commands `kubectl krew list` to see the list of install plugins or `kubectl carbonetes-scan --version` to see the version of the installed `kubectl-carbonetes-scan`.
 
 ## :email: Support
 To help with this plugin, or have an issue or feature request, please contact: [eng@carbonetes.com](eng@carbonetes.com)
