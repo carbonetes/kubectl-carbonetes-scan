@@ -8,8 +8,8 @@
 
 # `carbonetes scan`: Security Tool for kubectl and oc
 
-![Latest GitHub release](https://img.shields.io/github/release/carbonetes/kubectl-carbonetes-scan.svg)
-![GitHub stars](https://img.shields.io/github/stars/ahmetb/kubectx.svg?label=github%20stars)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/carbonetes/kubectl-carbonetes-scan?sort=v1.0.0&style=plastic)
+<!-- ![GitHub stars](https://img.shields.io/github/stars/ahmetb/kubectx.svg?label=github%20stars) -->
 ![Proudly written in Bash](https://img.shields.io/badge/written%20in-bash-ff69b4.svg)
 
 This repository provides `carbonetes-scan` tool.
