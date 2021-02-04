@@ -8,8 +8,12 @@
 
 # `carbonetes scan`: Security Tool for kubectl and oc
 
+![Latest GitHub release](https://img.shields.io/github/release/carbonetes/kubectl-carbonetes-scan.svg)
+![GitHub stars](https://img.shields.io/github/stars/ahmetb/kubectx.svg?label=github%20stars)
+![Proudly written in Bash](https://img.shields.io/badge/written%20in-bash-ff69b4.svg)
+
 This repository provides `carbonetes-scan` tool.
-[Install &rarr;](#installation)
+[Install &rarr;](#dvd-installation)
 
 **`carbonetes-scan`** provides comprehensive container analysis and policy evaluation as a fully managed service. Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA), license types, and secrets.
 
