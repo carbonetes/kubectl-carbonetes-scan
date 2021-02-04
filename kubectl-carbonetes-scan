@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# display the version of the plugin
 display_version() {
   local VERSION
   VERSION="v1.0.0"
@@ -8,8 +9,7 @@ Kubectl Carbonetes Scan $VERSION
 EOF
 }
 
-version="v1.0.0"
-
+# display an error message
 error() {
     echo >&2 "${1}"
     cat <<EOF
@@ -17,6 +17,7 @@ Run "kubectl carbonetes-scan --help", to see the full list of commands
 EOF
 }
 
+# display when -h or --help flag is present
 usage() {
     local SELF
     SELF="kubectl carbonetes-scan"
@@ -55,7 +56,7 @@ If you don't have it yet, you can register at: https://carbonetes.com
 EOF
 }
 
-# Validating all the required and default variables
+# Validating all the required variables
 validation() {
   # Required parameters
   REGISTRY_URI=${REGISTRY_URI:?'REGISTRY_URI argument is missing.'}
@@ -64,7 +65,7 @@ validation() {
   CARBONETES_PASSWORD=${CARBONETES_PASSWORD:?'CARBONETES_PASSWORD argument is missing'}
 }
 
-# Parsing the result of analysis using JQ
+# Getting the severities
 severities() {
   path="./.artifact.json";
   repoTag=$(jq -r '.repoTag' $path);
@@ -220,6 +221,7 @@ policyResult() {
   POLICY_RESULT=$(jq '[.repoImageEnvironments[].policyEvaluationLatest.policyResult] | [first]' $path | tr -d '"[]\n ');
   FINAL_ACTION=$(jq '[.repoImageEnvironments[].policyEvaluationLatest.finalAction] | [first]' $path | tr -d '"[]\n ');
 
+          # Display the policy result
           if [ $POLICY_RESULT == 'PASSED' ]; then 
                 echo -e "Policy Result : \033[32m PASSED\033[0m"
           elif [ $POLICY_RESULT == 'FAILED' ]; then
@@ -228,6 +230,7 @@ policyResult() {
                 echo -e "Policy Result : \033[31m No Policy Selected\033[0m"
           fi
             
+          # Display final action 
           if [ $FINAL_ACTION == 'STOP' ]; then 
                 echo -e "\033[20mFinal Action : \033[31m RECOMMENDED, fix all the known vulnerability of this image\033[0m"
                 echo ""
@@ -246,7 +249,7 @@ policyResult() {
                 printf "\n"
           fi
 
-          # Decides if the build will `STOP` or `GO` based on the policy evalution
+          # Display recommended action if the image fails on policy evaluation
           if [ $POLICY_RESULT == 'FAILED' ]; then
             if [ $FINAL_ACTION == 'STOP' ]; then
               echo "If you see this message, Carbonetes Scan recommends to fix all the known vulnerabilities on this image."
@@ -319,7 +322,7 @@ checkLicenses() {
 # Comprehensive Analysis
 comprehensiveScan() {
   echo ""
-  echo "Executing the Carbonetes Comprehensive Analysis... Please wait a few minutes."
+  echo "Executing the Carbonetes Comprehensive Analysis..."
   printf "\n"
 
   # Calling the Carbonetes Comprehensive Analysis API
@@ -354,6 +357,7 @@ displayResult() {
   rm ./.artifact.json
 }
 
+# Check if there is a running Pod
 is_running() {
     declare -a phase
     local phases=(${phase[@]} $(kubectl get pod --all-namespaces -o jsonpath='{..phase}'))
@@ -366,10 +370,12 @@ is_running() {
     done
 }
 
+# Main function
 main() {
-
+    # Display an error image if there no image specified
     [ $# -eq 0 ] && error "You must specify an image to use this plugin"
 
+    # arguments to be set to execute the comprehensive scan
     while [ $# -gt 0 ]; do
         case "$1" in
             -h | --help)
@@ -377,7 +383,6 @@ main() {
                 exit
                 ;;
             -i | --image)
-                shift
                 # check if there is any pod running
                 is_running
 
@@ -400,16 +405,19 @@ main() {
                 shift
                 ;;
             -r | --registry)
+                # check if there is any pod running
                 is_running
                 export REGISTRY_URI=$1
                 shift
                 ;;
             -u | --username)
+                # check if there is any pod running
                 is_running
                 export CARBONETES_USERNAME=$1
                 shift
                 ;;
             -p | --password)
+                # check if there is any pod running
                 is_running
                 export CARBONETES_PASSWORD=$1
                 shift
@@ -424,8 +432,6 @@ main() {
                 display_version
                 exit;;
             *)
-                # check if there is any pod running
-                is_running
                 error "Unknown command \"$1\""
                 exit
                 ;;
