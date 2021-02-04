@@ -1,0 +1,448 @@
+#!/usr/bin/env bash
+
+display_version() {
+  local VERSION
+  VERSION="v1.0.0"
+  cat <<EOF
+Kubectl Carbonetes Scan $VERSION
+EOF
+}
+
+version="v1.0.0"
+
+error() {
+    echo >&2 "${1}"
+    cat <<EOF
+Run "kubectl carbonetes scan --help", to see the full list of commands
+EOF
+}
+
+unknown() {
+  echo >&2 "${1}"
+  cat <<EOF
+Run "kubectl carbonetes scan --help", to see the full list of commands
+EOF
+}
+
+usage() {
+    local SELF
+    SELF="kubectl carbonetes scan"
+    echo ""
+    echo -e "\033[32mCarbonetes Scan: Security Tool for kubectl and oc\033[0m";
+    cat <<EOF
+
+This plugin provides comprehensive container analysis and policy evaluation as a fully managed service.
+Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA),
+license types, and secrets.
+
+Usage:
+    $SELF [flags]
+
+Flags:
+  -g, --get-all-images      : List all the unique images inside your cluster
+
+  -h, --help                : help for kubectl-carbonetes-scan
+
+  -i, --image <string>      : the image to be scanned
+
+  -p, --password <string>   : your account password on Carbonetes
+
+  -r, --registry <string>   : your registry uri on Carbonetes
+
+  -u, --username <string>   : the username you are using to login on Carbonetes
+
+  -v, --version             : version for kubectl-carbonetes-scan
+
+
+Use "$SELF --image <string> --registry <string> --username <string> --password <string>" to execute a comprehensive container analysis.
+
+You need a valid credentials on Carbonetes to use this plugin.
+If you don't have it yet, you can register at: https://carbonetes.com
+
+EOF
+}
+
+# Validating all the required and default variables
+validation() {
+  # Required parameters
+  REGISTRY_URI=${REGISTRY_URI:?'REGISTRY_URI argument is missing.'}
+  REPO_IMAGE_TAG=${REPO_IMAGE_TAG:?'REPO_IMAGE_TAG argument is missing.'}
+  CARBONETES_USERNAME=${CARBONETES_USERNAME:?'CARBONETES_USERNAME argument is missing.'}
+  CARBONETES_PASSWORD=${CARBONETES_PASSWORD:?'CARBONETES_PASSWORD argument is missing'}
+}
+
+# Parsing the result of analysis using JQ
+severities() {
+  path="./.artifact.json";
+  repoTag=$(jq -r '.repoTag' $path);
+  critical=$(jq '.' $path | jq '. | ({severity: .imageAnalysisLatest.vulnerabilities[].severity})? | select(.severity == "Critical").severity' | awk 'END{print "Critical : " NR}');
+  high=$(jq '.' $path | jq '. | ({severity: .imageAnalysisLatest.vulnerabilities[].severity})? | select(.severity == "High").severity' | awk 'END{print "High : " NR}');
+  medium=$(jq '.' $path | jq '. | ({severity: .imageAnalysisLatest.vulnerabilities[].severity})? | select(.severity == "Medium").severity' | awk 'END{print "Medium : " NR}');
+  low=$(jq '.' $path | jq '. | ({severity: .imageAnalysisLatest.vulnerabilities[].severity})? | select(.severity == "Low").severity' | awk 'END{print "Low : " NR}');
+  negligible=$(jq '.' $path | jq '. | ({severity: .imageAnalysisLatest.vulnerabilities[].severity})? | select(.severity == "Negligible").severity' | awk 'END{print "Negligible : " NR}');
+  unknown=$(jq '.' $path | jq '. | ({severity: .imageAnalysisLatest.vulnerabilities[].severity})? | select(.severity == "Unknown").severity' | awk 'END{print "Unknown : " NR}');
+}
+
+# Displaying of Vulnerabilities
+vuln() {
+  echo -e "Image: \033[32m$repoTag\033[0m";
+  echo "==========================================Severities=============================================="
+  echo -e "\033[31m$critical \c"
+  echo -e "\033[93m$high \c"
+  echo -e "\033[33m$medium \c"
+  echo -e "\033[34m$low \c"
+  echo -e "\033[36m$negligible \c"
+  echo -e "\033[37m$unknown\033[0m"
+  echo "========================================Vulnerabilities==========================================="
+  {
+    jq '.' $path | jq '. | ({severity: .imageAnalysisLatest.vulnerabilities[].severity})? | if .severity == null then .severity |= "--" else . end' | grep -m 10 'severity' | awk -F':' '{print $2}' | tr -d '" ' | awk 'NR==1{$0="Severity\n"$0}1' > severity.txt;
+    jq '.' $path | jq '. | ({vuln: .imageAnalysisLatest.vulnerabilities[].vuln})? | if .vuln == null then .vuln |= "--" else . end' | grep -m 10 'vuln' | awk -F':' '{print $2}' | tr -d '" '| awk 'NR==1{$0="Vulnerability Name\n"$0}1' > vuln.txt;
+    jq '.' $path | jq '. | ({package_name: .imageAnalysisLatest.vulnerabilities[].package_name})? | if .package_name == null then .package_name |= "--" else . end' | grep -m 10 'package_name' | awk -F':' '{print $2}' | tr -d '" ' | awk 'NR==1{$0="Package Name\n"$0}1' > package_name.txt;
+    jq '.' $path | jq '. | ({package_version: .imageAnalysisLatest.vulnerabilities[].package_version})? | if .package_version == null then .package_version |= "--" else . end' | grep -m 10 'package_version' | awk -F ':' '{print $2}' | tr -d '" ' | awk 'NR==1{$0="Package Version\n" $0}1' > package_version.txt;
+    jq '.' $path | jq '. | ({package_cpe: .imageAnalysisLatest.vulnerabilities[].package_cpe})? | if .package_cpe == null then .package_cpe |= "--" else . end' | grep -m 10 'package_cpe' | awk -F':' '{print $2}' | tr -d '" ' | awk 'NR==1{$0="Package PCE\n"$0}1' > package_cpe.txt;
+    jq '.' $path | jq '. | ({package_path: .imageAnalysisLatest.vulnerabilities[].package_path})? | if .package_path == null then .package_path |= "--" else . end' | grep -m 10 'package_path' | awk -F':' '{print $2}' | tr -d '" ' | awk 'NR==1{$0="Package Path\n"$0}1' > package_path.txt;
+    jq '.' $path | jq '. | ({fix: .imageAnalysisLatest.vulnerabilities[].fix})? | if .fix == null then .fix |= "--" else . end' | grep -m 10 'fix' | awk -F':' '{print $2}' | tr -d '" ' | awk 'NR==1{$0="Fix\n"$0}1' > fix.txt;
+    jq '.' $path | jq '. | ({feed: .imageAnalysisLatest.vulnerabilities[].feed})? | if .feed == null then .feed |= "--" else . end' | grep -m 10 'feed' | awk -F':' '{print $2}' | tr -d '" ' | awk 'NR==1{$0="Feed\n"$0}1'> feed.txt;
+    jq '.' $path | jq '. | ({feed_group: .imageAnalysisLatest.vulnerabilities[].feed_group})? | if .feed_group == null then .feed_group |= "--" else . end' | grep -m 10 'feed_group' | awk -F':' '{print $2}' | tr -d '" ' | awk 'NR==1{$0="Feed Group\n"$0}1'> feed_group.txt;
+ 
+    if [ -s severity.txt ]
+    then
+      printf ""
+    else
+      printf '\n\t\t\t\t     No Vulnerabilities found\n\n'
+    fi
+    
+    longest_line() { awk -F '\t' 'length > m { m = length } END { print m }' "$1"; }
+    paste severity.txt vuln.txt package_name.txt package_version.txt package_cpe.txt package_path.txt fix.txt feed.txt feed_group.txt | awk -F '\t' -v len1=$( longest_line severity.txt ) -v len2=$( longest_line vuln.txt ) -v len3=$( longest_line package_name.txt ) -v len4=$( longest_line package_version.txt ) -v len5=$( longest_line package_cpe.txt ) -v len6=$( longest_line package_path.txt ) -v len7=$( longest_line fix.txt ) -v len8=$( longest_line feed.txt ) -v len9=$( longest_line feed_group.txt ) '{ printf("|%*s|%*s|%*s|%*s|%*s|%*s|%*s|%*s|%*s|\n", len1, $1, len2, $2, len3, $3, len4, $4, len5, $5, len6, $6, len7, $7, len8, $8, len9, $9 ) }';
+    rm -rf ./*.txt; } || {
+      echo "\t\t No Vulnerabilities found";
+    }
+}
+
+# Displaying of Software Composition
+sc() {
+  echo ""
+  echo "==========================================Severities=============================================="
+  echo -e "\033[31mCritical : \c" && grep -A12 'analysis' $path | grep -o '\"critical\":[^,]*' | awk -F':' '{printf $2}' | tr -d '"';
+  echo -e "\033[93m\tHigh : \c" && grep -A12 'analysis' $path | grep -o '\"high\":[^,]*' | awk -F':' '{printf $2}' | tr -d '"';
+  echo -e "\033[33m\tMedium : \c" && grep -A12 'analysis' $path | grep -o '\"medium\":[^,]*' | awk -F':' '{printf $2}' | tr -d '"';
+  echo -e "\033[34m\tLow : \c" && grep -A12 'analysis' $path | grep -o '\"low\":[^,]*' | awk -F':' '{print $2}' | tr -d '"';
+  echo -e "\033[0m\c"
+  echo "====================================Software Composition=========================================="
+  {
+    jq '.' $path | jq '. | .scaLatest.analysis.dependencies[].vulnerabilities[]' | jq -r 'if .dependencyVulnerabilityId == null then .dependencyVulnerabilityId |= "--" else . end | limit(10; .dependencyVulnerabilityId)' | awk 'NR==1{$0="Dependency Vulnerability Id\n"$0}1' > dependencyVulnerabilityId.txt;
+    jq '.' $path | jq '. | .scaLatest.analysis.dependencies[].vulnerabilities[]' | jq -r 'if .name == null then .name |= "--" else . end | limit(10; .name)' | awk 'NR==1{$0="Dependency Vulnerability Id\n"$0}1' > name.txt;
+    jq '.' $path | jq '. | .scaLatest.analysis.dependencies[].vulnerabilities[]' | jq -r 'if .severity == null then .severity |= "--" else . end | limit(10; .severity)' | awk 'NR==1{$0="Name\n"$0}1' > severity.txt;
+    jq '.' $path | jq '. | .scaLatest.analysis.dependencies[].vulnerabilities[]' | jq -r 'if .source == null then .source |= "--" else . end | limit(10; .source)' | awk 'NR==1{$0="Source\n"$0}1' > source.txt;
+
+    if [ -s dependencyVulnerabilityId.txt ]
+    then
+      printf ""
+    else
+      printf '\n\t\t\t No Vulnerabilities found\n\n'
+    fi
+    
+    paste dependencyVulnerabilityId.txt name.txt severity.txt source.txt | awk -F '\t' -v len1=$( longest_line dependencyVulnerabilityId.txt ) -v len2=$( longest_line name.txt ) -v len3=$( longest_line severity.txt ) -v len4=$( longest_line source.txt ) '{ printf("|%*s|%*s|%*s|%*s|\n",len1, $1, len2, $2, len3, $3, len4, $4 ) }';
+    rm -rf ./*.txt; } || {
+      echo "\t\t No Vulnerabilities found";
+    }
+}
+
+# Displaying of software dependencies
+sd() {
+  echo ""
+  echo "==================================Software Dependencies==========================================="
+  {
+    jq '.' $path | jq '. | .scaLatest.analysis.dependencies[] | {dependencyId: .dependencyId, vulnCount: .vulnerabilities| length} | if .dependencyId== null then .dependencyId |= "--" else . end' | jq -s 'sort_by(.vulnCount) | reverse' | jq -r 'limit(10;.[] | .dependencyId)' | awk 'NR==1{$0="Dependency Id\n"$0}1' > dependencyId.txt;
+    jq '.' $path | jq '. | .scaLatest.analysis.dependencies[] | {fileName: .fileName, vulnCount: .vulnerabilities| length} | if .fileName == null then .fileName |= "--" else . end' | jq -s 'sort_by(.vulnCount) | reverse' | jq -r 'limit(10;.[] | .fileName)' | awk 'NR==1{$0="File Name\n"$0}1' > fileName.txt;
+    jq '.' $path | jq '. | .scaLatest.analysis.dependencies[] | {filePath: .filePath, vulnCount: .vulnerabilities| length} | if .filePath == null then .filePath |= "--" else . end' | jq -s 'sort_by(.vulnCount) | reverse' | jq -r 'limit(10;.[] | .filePath)' | awk 'NR==1{$0="File Path\n"$0}1' > filePath.txt;
+    jq '.' $path | jq '. | .scaLatest.analysis.dependencies[] | {dependencyId: .dependencyId, vulnCount: .vulnerabilities| length} | if .dependencyId == null then .dependencyId |= "--" else . end' | jq -s 'sort_by(.vulnCount) | reverse' | jq -r 'limit(10;.[] | .vulnCount)' | awk 'NR==1{$0="Vulnerability Count\n"$0}1' > vulnCount.txt;
+
+    if [ -s dependencyId.txt ]
+    then
+      printf ""
+    else
+      printf '\n\t\t\t No Vulnerabilities found\n\n'
+    fi
+    
+    paste dependencyId.txt fileName.txt filePath.txt vulnCount.txt | awk -F '\t' -v len1=$( longest_line dependencyId.txt ) -v len2=$(longest_line fileName.txt ) -v len3=$( longest_line filePath.txt ) -v len4=$( longest_line vulnCount.txt ) '{ printf("|%*s|%*s|%*s|%*s|\n",len1, $1, len2, $2, len3, $3, len4, $4) }';
+    rm -rf ./*.txt; } || {
+      echo "\t\t No Vulnerabilities";
+    }
+}
+
+# Displaying of Licenses
+licenses() {
+  echo ""
+  echo "==========================================Licenses================================================"
+  {
+    jq '.' $path | jq '. | .licenseFinderLatest.imageDependencies[].dependencyName | if .dependencyName == null then .dependencyName |= "--" else . end' | sort '--unique' | grep -m 10 '' | tr -d '", ' | awk 'NR==1{$0="Dependency Name\n"$0}1' > dependencyName.txt;
+    jq '.' $path | jq '. | .licenseFinderLatest.imageDependencies[].version | if .version == null then .version |= "--" else . end' | sort '--unique' | grep -m 10 '' | tr -d '", ' | awk 'NR==1{$0="Version\n"$0}1' > version.txt;
+    jq '.' $path | jq '. | .licenseFinderLatest.imageDependencies[].packageManager | if .packageManager == null then .packageManager |= "--" else . end' | sort '--unique' | grep -m 10 '' | tr -d '", ' | awk 'NR==1{$0="Package Name\n"$0}1' > packageManager.txt;
+    jq '.' $path | jq '. | .licenseFinderLatest.imageDependencies[].groups | if .groups == null then .groups |= "--" else . end' | sort '--unique' | grep -m 10 '' | tr -d '", ' | awk 'NR==1{$0="Groups\n"$0}1' > groups.txt;
+    jq '.' $path | jq '. | .licenseFinderLatest.imageDependencies[] | {licenses: .licenses } | if .licenses == null then .licenses |= "--" else . end' | jq --raw-output '.licenses | map(.licenseName) | join(",") ' | sort '--unique' | grep -m 10 '' | awk 'NR==1{$0="License Name\n"$0}1'> licenses.txt;
+
+    paste dependencyName.txt version.txt licenses.txt packageManager.txt groups.txt | awk -F '\t' -v len1=$( longest_line dependencyName.txt ) -v len2=$( longest_line version.txt ) -v len3=$( longest_line licenses.txt ) -v len4=$( longest_line packageManager.txt ) -v len5=$(longest_line groups.txt ) '{ printf("|%*s|%*s|%*s|%*s|%*s|\n", len1, $1, len2, $2, len3, $3, len4, $4, len5, $5) }';
+    if [ -s dependencyName.txt ]
+    then
+      printf ""
+    else
+      printf '\n\t\t\t\t No Licenses found\n\n'
+    fi
+    
+    rm -rf ./*.txt; } || {
+      echo "\t\t No Licenses found"
+    }
+}
+
+# Displaying of Secrets
+secrets() {
+  echo ""
+  echo "==========================================Secrets================================================="
+  {
+    jq '.' $path | jq '. | .secretAnalysisLatest.secrets[]' | jq -r 'if .fileName == null then .fileName |= "--" else . end | limit(10; .fileName)' | awk 'NR==1{$0="File Name\n"$0}1' > fileName.txt;
+    jq '.' $path | jq '. | .secretAnalysisLatest.secrets[]' | jq -r 'if .contentRegexMatch == null then .contentRegexMatch |= "--" else . end | limit(10; .contentRegexMatch)' | awk 'NR==1{$0="Content Regex Match\n"$0}1' > contentRegexMatch.txt;
+    jq '.' $path | jq '. | .secretAnalysisLatest.secrets[]' | jq -r 'if .filePath == null then .filePath |= "--" else . end | limit(10; .filePath)' | awk 'NR==1{$0="File Path\n"$0}1' > filePath.txt;
+    jq '.' $path | jq '. | .secretAnalysisLatest.secrets[]' | jq -r 'if .lineNo == null then .lineNo |= "--" else . end | limit(10; .lineNo)' | awk 'NR==1{$0="Line No\n"$0}1' > lineNo.txt;
+
+    if [ -s fileName.txt ]
+    then
+      printf ""
+    else
+      printf '\n\t\t\t\t No Secrets found\n\n'
+    fi
+
+    paste fileName.txt contentRegexMatch.txt filePath.txt lineNo.txt | awk -F '\t' -v len1=$( longest_line fileName.txt ) -v len2=$( longest_line contentRegexMatch.txt ) -v len3=$( longest_line filePath.txt ) -v len4=$( longest_line lineNo.txt ) '{ printf("|%*s|%*s|%*s|%*s|\n",len1, $1, len2, $2, len3, $3, len4, $4) }'
+    rm -rf ./*.txt; } || {
+      echo "\t\t No Secrets found"
+    }
+}
+
+# Getting the policy result based on the policy evalution
+policyResult() {
+  echo ""
+  echo "=================================================================================================="
+  echo ""
+
+  POLICY_RESULT=$(jq '[.repoImageEnvironments[].policyEvaluationLatest.policyResult] | [first]' $path | tr -d '"[]\n ');
+  FINAL_ACTION=$(jq '[.repoImageEnvironments[].policyEvaluationLatest.finalAction] | [first]' $path | tr -d '"[]\n ');
+
+          if [ $POLICY_RESULT == 'PASSED' ]; then 
+                echo -e "Policy Result : \033[32m PASSED\033[0m"
+          elif [ $POLICY_RESULT == 'FAILED' ]; then
+                echo -e "Policy Result : \033[31m FAILED\033[0m"
+          else
+                echo -e "Policy Result : \033[31m No Policy Selected\033[0m"
+          fi
+            
+          if [ $FINAL_ACTION == 'STOP' ]; then 
+                echo -e "\033[20mFinal Action : \033[31m RECOMMENDED, fix all the known vulnerability of this image\033[0m"
+                echo ""
+                printf "\n"
+          elif [ $FINAL_ACTION == 'GO' ]; then
+                echo -e "Final Action : \033[32m SAFE, This image is safe to deploy\033[0m"
+                echo ""
+                printf "\n"
+          elif [ $FINAL_ACTION == 'WARN' ]; then
+                echo -e "Final Action : \033[33m WARNING, continue deploying this image on your own risk\033[0m"
+                echo ""
+                printf "\n"
+          else
+                echo -e "\033[20mFinal Action : \033[31m No Action Selected\033[0m"
+                echo ""
+                printf "\n"
+          fi
+
+          # Decides if the build will `STOP` or `GO` based on the policy evalution
+          if [ $POLICY_RESULT == 'FAILED' ]; then
+            if [ $FINAL_ACTION == 'STOP' ]; then
+              echo "If you see this message, Carbonetes Scan recommends to fix all the known vulnerabilities on this image."
+              echo ""
+              printf "\n"
+              exit 1;
+            else
+              exit 0;
+              echo ""
+              printf "\n"
+            fi
+          else
+              exit 0;
+              echo ""
+              printf "\n"
+          fi
+}
+
+## catch the error messages
+checkLicenses() {
+  if [[ $analysisCheckerData == 'Authentication Failed' ]]; then
+    printf "\n";
+    echo "";
+    echo "ERROR: Authentication Failed. Please check your username and password";
+    echo "";
+    printf "\n";
+    exit 1;
+  elif [[ $analysisCheckerData == 'Account not found' ]]; then
+    printf "\n";
+    echo "";
+    echo "ERROR: Account not found";
+    echo "";
+    printf "\n";
+    exit 1;
+  elif [[ $analysisCheckerData == 'Registry Is not found' ]]; then
+    printf "\n";
+    echo "";
+    echo "ERROR: Registry Is not found";
+    echo "";
+    printf "\n";
+    exit 1;
+  elif [[ $analysisCheckerData == 'License has already expired' ]]; then 
+    printf "\n";
+    echo "";
+    echo "ERROR: License has already expired";
+    printf "\n";
+    echo "INFO: Please renew your AWS Contract licenses at: https://aws.amazon.com/marketplace/saas/ordering?productId=1bede3a0-aff1-4a89-ad92-baab6b8b4e70"
+    echo "";
+    printf "\n";
+    exit 1;
+  elif [[ $analysisCheckerData == 'Insufficient license count' ]]; then
+    printf "\n";
+    echo "";
+    echo "ERROR: Insufficient license count";
+    printf "\n";
+    echo "INFO: Please configure or renew your AWS Contract licenses at: https://aws.amazon.com/marketplace/saas/ordering?productId=1bede3a0-aff1-4a89-ad92-baab6b8b4e70"
+    echo "";
+    printf "\n";
+    exit 1;
+  elif [[ $analysisCheckerData == 'Image is not found in the registry' ]]; then
+    printf "\n";
+    echo "";
+    echo "ERROR: Image is not found in the registry";
+    echo "";
+    printf "\n";
+    exit 1;
+  fi
+}
+
+# Comprehensive Analysis
+comprehensiveScan() {
+  echo ""
+  echo "Executing the Carbonetes Comprehensive Analysis... Please wait a few minutes."
+  printf "\n"
+
+  # Calling the Carbonetes Comprehensive Analysis API
+  analysisCheckerData=$(curl -X POST --header 'Content-Type:application/json' --data '{"registryUri":"'"$REGISTRY_URI"'","repoImageTag":"'"$REPO_IMAGE_TAG"'","username":"'"$CARBONETES_USERNAME"'","password":"'"$CARBONETES_PASSWORD"'"}' 'https://api.carbonetes.com/api/v1/analysis/analyze')
+  
+  # check license and catch the error messages
+  checkLicenses
+
+  # getting the result of the analysis from the API
+  analysisResult=$(curl -X POST --header 'Content-Type:application/json' --data $analysisCheckerData 'https://api.carbonetes.com/api/v1/analysis/get-result')
+
+  # Passing the result of analysis to an artifact on a local dir
+  touch ./.artifact.json
+  echo $analysisResult > ./.artifact.json
+  echo ""
+  echo "Finished analyzing... You may now take a look at the results below."
+  echo ""
+}
+
+# Displaying all the results of analysis
+displayResult() {
+  echo "Analysis Result ---"
+  severities
+  vuln
+  sc
+  sd
+  licenses
+  secrets
+  policyResult
+
+  # remove the artifact on the local dir
+  rm ./.artifact.json
+}
+
+is_running() {
+    declare -a phase
+    local phases=(${phase[@]} $(kubectl get pod --all-namespaces -o jsonpath='{..phase}'))
+    for p in "${phases[@]}";
+      do
+          if [[ "$p" != "Running" ]]; then
+              echo "There is no Pod in Running phase ($p)"
+              exit 1
+          fi
+    done
+}
+
+main() {
+
+    [ $# -eq 0 ] && error "You must specify an image to use this plugin"
+
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -h | --help)
+                usage
+                exit
+                ;;
+            -i | --image)
+                shift
+                # check if there is any pod running
+                is_running
+
+                # check if the specified image is existing inside the cluster
+                declare -a image
+                images=(${image[@]} $(kubectl get pod --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq))
+                for img in "${images[@]}"; do
+                  if [[ "$img" == "$1" ]]; then
+                      export found="1"
+                  fi
+                done
+
+                if [[ $found != "1" ]]; then
+                    echo ""
+                    echo "The image you want to scan is not found inside your cluster."
+                    exit 1
+                else
+                    export REPO_IMAGE_TAG=$1
+                fi
+                shift
+                ;;
+            -r | --registry)
+                shift
+                export REGISTRY_URI=$1
+                shift
+                ;;
+            -u | --username)
+                shift
+                export CARBONETES_USERNAME=$1
+                shift
+                ;;
+            -p | --password)
+                shift
+                export CARBONETES_PASSWORD=$1
+                shift
+                ;;
+            -g | --get-all-images)
+                # check if there is any pod running
+                is_running
+                kubectl get pod --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq
+                exit  
+                ;;
+            -v | --version)
+                display_version
+                exit;;
+            *)
+                # check if there is any pod running
+                is_running
+                unknown "Unknown command \"$1\""
+                exit
+                ;;
+        esac
+    done
+
+  # Pipe execution..
+  validation
+  comprehensiveScan
+  displayResult
+}
+
+main "$@"
