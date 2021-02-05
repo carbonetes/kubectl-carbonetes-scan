@@ -2,11 +2,11 @@
 
 # `carbonetes-scan`: Container Security Tool for kubectl and oc
 
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/carbonetes/kubectl-carbonetes-scan)
-![GitHub](https://img.shields.io/github/license/carbonetes/kubectl-carbonetes-scan)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/carbonetes/kubectl-carbonetes-scan)](https://github.com/carbonetes/kubectl-carbonetes-scan/releases)
+[![GitHub](https://img.shields.io/github/license/carbonetes/kubectl-carbonetes-scan)](https://github.com/carbonetes/kubectl-carbonetes-scan/blob/main/LICENSE)
 ![Proudly written in Bash](https://img.shields.io/badge/written%20in-bash-ff69b4.svg)
 
-This repository provides `carbonetes-scan` tool.
+This repository provides `carbonetes-scan` container security scan tool for Kubernetes cluster.
 [Install &rarr;](#dvd-installation)
 
 **`carbonetes-scan`** provides comprehensive container analysis and policy evaluation as a fully managed service. Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA), license types, and secrets.
@@ -19,7 +19,7 @@ carbonetes-scan is a tool that seamlessly integrates comprehensive container ana
 
 ## :pencil: Usage
 
-```sh
+```
 ~ % kubectl carbonetes-scan --help
 
 Carbonetes Scan: Security Tool for kubectl and oc
@@ -95,7 +95,7 @@ You can install kubectl-carbonetes-scan using [Krew](https://krew.sigs.k8s.io/),
 $ kubectl krew install carbonetes-scan
 ```
 
-You can verify the installation using the commands `kubectl krew list` to see the list of install plugins or `kubectl carbonetes-scan --version` to see the version of the installed `kubectl-carbonetes-scan`.
+You can verify the installation using the commands `kubectl krew list` to see the list of installed plugins or `kubectl carbonetes-scan --version` to see the version of the installed `kubectl-carbonetes-scan`.
 
 ## :email: Support
 To help with this plugin, or have an issue or feature request, please contact: [eng@carbonetes.com](eng@carbonetes.com)
