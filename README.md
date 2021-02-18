@@ -70,8 +70,6 @@ This pipe requires a valid **Carbonetes credentials** `(email and password)`.
 
 _\* = required inputs._
 
-* :pushpin: Note : to be aligned in your CI/CD pipeline, make sure that you supply the same REPOIMAGETAG that has been built within your pipeline stages.*
-
 ## :bulb: Outputs Description
 
 | Output Name                  | Description                                                                                  |
