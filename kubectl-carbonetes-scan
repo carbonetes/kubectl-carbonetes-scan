@@ -19,6 +19,7 @@ error() {
     cat <<EOF
 Run "kubectl carbonetes-scan --help", to see the full list of commands
 EOF
+    exit 1
 }
 
 ##############################################
