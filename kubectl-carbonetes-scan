@@ -128,11 +128,6 @@ main() {
                 ;;
             -i | --image)
                 shift
-                ######################################
-                # check if there is any pod running
-                ######################################
-                is_running
-  
                 ################################################################
                 # check if the specified image is existing inside the cluster
                 ################################################################
@@ -155,28 +150,16 @@ main() {
                 ;;
             -r | --registry)
                 shift
-                ######################################
-                # check if there is any pod running
-                ######################################
-                is_running
                 export REGISTRY_URI=$1
                 shift
                 ;;
             -u | --username) 
                 shift
-                ######################################
-                # check if there is any pod running
-                ######################################
-                is_running
                 export CARBONETES_USERNAME=$1
                 shift
                 ;;
             -p | --password)
                 shift
-                ######################################
-                # check if there is any pod running
-                ######################################
-                is_running
                 export CARBONETES_PASSWORD=$1
                 shift
                 ;;
@@ -185,6 +168,10 @@ main() {
                 # check if there is any pod running
                 ######################################
                 is_running
+
+                #################################################
+                # Get all the unique images inside the cluster
+                #################################################
                 kubectl get pod --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq
                 exit  
                 ;;
@@ -198,6 +185,11 @@ main() {
                 ;;
         esac
     done
+
+  ######################################
+  # check if there is any pod running
+  ######################################
+  is_running
 
   #####################################
   # Execute Carbonetes Complete Scan
