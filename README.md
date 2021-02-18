@@ -9,13 +9,13 @@
 This repository provides `carbonetes-scan` container security scan tool for Kubernetes cluster.
 [Install &rarr;](#dvd-installation)
 
-**`carbonetes-scan`** provides comprehensive container analysis and policy evaluation as a fully managed service. Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA), license types, and secrets.
+**`carbonetes-scan`** provides comprehensive container analysis and policy evaluation as a fully managed service. Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA), license types, secrets and bill of materials.
 
 :pushpin: To know more about Carbonetes, check [our website](https://carbonetes.com).
 
 # carbonetes-scan
 
-carbonetes-scan is a tool that seamlessly integrates comprehensive container analysis directly into your Kubernetes cluster.
+carbonetes-scan is a tool that seamlessly integrates complete container analysis directly into your Kubernetes cluster.
 
 ## :pencil: Usage
 
@@ -26,7 +26,7 @@ Carbonetes Scan: Security Tool for kubectl and oc
 
 This plugin provides comprehensive container analysis and policy evaluation as a fully managed service.
 Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA),
-license types, and secrets.
+license types, secrets, and bill of materials.
 
 Usage:
     kubectl carbonetes-scan [flags]
@@ -49,7 +49,7 @@ Flags:
 
 Use "kubectl carbonetes-scan --image <string> --registry <string> --username <string> --password <string>" to execute a comprehensive container analysis.
 
-You need a valid credentials on Carbonetes to use this plugin.
+You need a valid credentials in Carbonetes to use this plugin.
 If you don't have it yet, you can register at: https://carbonetes.com
 ```
 
@@ -79,6 +79,7 @@ _\* = required inputs._
 | Software Dependencies        | Pieces of software that rely on each other listed with vulnerability counts. |
 | Licenses                     | Legal compliance found on each software of the scanned image. |
 | Secrets                      | Secret data found on each software of the scanned image. |
+| Bill of Materials            | A list of all the components exist in a software. |
 | Policy Result                | The result of the policy evaluation, `PASSED` or `FAILED`. |
 | Final Action                 | Recommends if you need to fix all the known vulnerabilities of the scanned image. |
 

@@ -33,7 +33,7 @@ usage() {
 
 This plugin provides comprehensive container analysis and policy evaluation as a fully managed service.
 Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA),
-license types, and secrets.
+license types, secrets, and bill of materials.
 
 Usage:
     $SELF [flags]
@@ -56,7 +56,7 @@ Flags:
 
 Use "$SELF --image <string> --registry <string> --username <string> --password <string>" to execute a comprehensive container analysis.
 
-You need a valid credentials on Carbonetes to use this plugin.
+You need a valid credentials in Carbonetes to use this plugin.
 If you don't have it yet, you can register at: https://carbonetes.com
 
 EOF
