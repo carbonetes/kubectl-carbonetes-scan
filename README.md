@@ -47,7 +47,7 @@ Flags:
   -v, --version             : version for kubectl-carbonetes-scan
 
 
-Use "kubectl carbonetes scan --image <string> --registry <string> --username <string> --password <string>" to execute a comprehensive container analysis.
+Use "kubectl carbonetes-scan --image <string> --registry <string> --username <string> --password <string>" to execute a comprehensive container analysis.
 
 You need a valid credentials on Carbonetes to use this plugin.
 If you don't have it yet, you can register at: https://carbonetes.com
