@@ -38,28 +38,28 @@ Flags:
 
   -i, --image <string>      : the image to be scanned
 
-  -p, --password <string>   : your account password on Carbonetes
+  -p, --password <string>   : Carbonetes account password
 
-  -r, --registry <string>   : your registry uri on Carbonetes
+  -r, --registry <string>   : Registry Uri (Added in Carbonetes Web Application)
 
-  -u, --username <string>   : the username you are using to login on Carbonetes
+  -u, --username <string>   : Carbonetes account username
 
   -v, --version             : version for kubectl-carbonetes-scan
 
 
-Use "kubectl carbonetes-scan --image <string> --registry <string> --username <string> --password <string>" to execute a comprehensive container analysis.
+Use "kubectl carbonetes-scan --image <string> --registry <string> --username <string> --password <string>" to execute a complete container analysis.
 
 You need a valid credentials in Carbonetes to use this plugin.
 If you don't have it yet, you can register at: https://carbonetes.com
 ```
 
-## :exclamation: Prerequisites
+## :clipboard: Prerequisites
 
 This pipe requires a valid **Carbonetes credentials** `(email and password)`.
 
 - Doesn't have any credentials yet? [Register now](https://console.carbonetes.com/register).
 
-## :bulb: Arguments Description
+## :bulb: Arguments
 
 | Argument Name               | Description                                                  |
 | --------------------------- | ------------------------------------------------------------ |
@@ -70,7 +70,7 @@ This pipe requires a valid **Carbonetes credentials** `(email and password)`.
 
 _\* = required inputs._
 
-## :bulb: Outputs Description
+## :bulb: Outputs
 
 | Output Name                  | Description                                                                                  |
 | ---------------------------- | -------------------------------------------------------------------------------------------- |
