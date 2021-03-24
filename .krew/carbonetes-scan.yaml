@@ -12,6 +12,8 @@ spec:
     Carbonetes analyzes your container images for native
     code vulnerabilities, software composition analysis (SCA),
     license types, malware, secrets, and bill of materials.
+  caveats: |
+    Docker needs to be installed on your machine to use this plugin.
   platforms:
   - selector:
       matchExpressions:

@@ -63,6 +63,18 @@ If you don't have it yet, you can register at: https://carbonetes.com
 EOF
 }
 
+#################################
+# Check if Docker is installed
+#################################
+checkDockerInstallation() {
+    if [[ -x "$(command -v docker)" ]]; then
+        echo "Docker is installed. Executing Carbonetes Complete Scan..."
+        carbonetesScan
+    else
+        echo "You need to install Docker to use this plugin"
+    fi
+}
+
 ##########################################
 # Validating all the required variables
 ##########################################
@@ -192,10 +204,10 @@ main() {
   ######################################
   is_running
 
-  #####################################
-  # Execute Carbonetes Complete Scan
-  #####################################
-  carbonetesScan
+  ########################################################################
+  # Check if Docker is installed then execute Carbonetes Complete Scan
+  ########################################################################
+  checkDockerInstallation
 }
 
 main "$@"

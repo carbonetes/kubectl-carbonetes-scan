@@ -55,7 +55,7 @@ If you don't have it yet, you can register at: https://carbonetes.com
 
 ## :clipboard: Prerequisites
 
-This pipe requires a valid **Carbonetes credentials** `(email and password)`.
+This plugin requires **Docker installation** and a valid **Carbonetes credentials** `(email and password)`.
 
 - Doesn't have any credentials yet? [Register now](https://console.carbonetes.com/register).
 
