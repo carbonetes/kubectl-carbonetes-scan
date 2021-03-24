@@ -40,7 +40,7 @@ Usage:
     $SELF [flags]
 
 Flags:
-  -g, --get-all-images      : List all the unique images inside your cluster
+  -A, --all-namespaces      : List all the unique images on all namespaces
 
   -h, --help                : help for kubectl-carbonetes-scan
 
@@ -164,7 +164,7 @@ main() {
                 export CARBONETES_PASSWORD=$1
                 shift
                 ;;
-            -g | --get-all-images)
+            -A | --all-namespaces)
                 ######################################
                 # check if there is any pod running
                 ######################################

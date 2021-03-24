@@ -5,7 +5,7 @@ metadata:
 spec:
   homepage: https://github.com/carbonetes/kubectl-carbonetes-scan
   shortDescription: Seamlessly integrates complete container analysis directly into your Kubernetes cluster.
-  version: v0.0.3
+  version: v1.0.0
   description: |
     Provides complete container analysis and
     policy evaluation as a fully managed service.

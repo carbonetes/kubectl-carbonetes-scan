@@ -32,7 +32,7 @@ Usage:
     kubectl carbonetes-scan [flags]
 
 Flags:
-  -g, --get-all-images      : List all the unique images inside your cluster
+  -A, --all-namespaces      : List all the unique images on all namespaces
 
   -h, --help                : help for kubectl-carbonetes-scan
 
