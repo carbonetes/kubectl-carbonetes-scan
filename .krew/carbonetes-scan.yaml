@@ -4,7 +4,7 @@ metadata:
   name: carbonetes-scan
 spec:
   homepage: https://github.com/carbonetes/kubectl-carbonetes-scan
-  shortDescription: Seamlessly integrates complete container analysis directly into your Kubernetes cluster.
+  shortDescription: Integrates container analysis directly into your cluster.
   version: v1.0.0
   description: |
     Provides complete container analysis and
