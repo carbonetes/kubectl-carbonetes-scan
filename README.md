@@ -78,6 +78,7 @@ _\* = required inputs._
 | Software Compositions        | Software that might cause a security risk listed with severities. |
 | Software Dependencies        | Pieces of software that rely on each other listed with vulnerability counts. |
 | Licenses                     | Legal compliance found on each software of the scanned image. |
+| Malware                      | Virus threats found on the scanned image. |
 | Secrets                      | Secret data found on each software of the scanned image. |
 | Bill of Materials            | A list of all the components exist in a software. |
 | Policy Result                | The result of the policy evaluation, `PASSED` or `FAILED`. |
