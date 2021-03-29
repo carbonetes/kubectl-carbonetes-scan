@@ -25,7 +25,7 @@ spec:
         - darwin
         - linux
     uri: https://github.com/carbonetes/kubectl-carbonetes-scan/archive/refs/tags/v1.1.0.tar.gz
-    sha256: e786a26443b21ec35dcb0efe0de5461daa7e094ac27bea78eaa3c40a53e2cedd
+    sha256: bae6b9596cdc6bd335dcbf04bb7b4c09506c82e1a4e193f1ed25c2b850af86a4
     bin: kubectl-carbonetes-scan
     files:
     - from: kubectl-carbonetes-scan-*/kubectl-carbonetes-scan

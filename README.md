@@ -93,6 +93,20 @@ You can install kubectl-carbonetes-scan using [Krew](https://krew.sigs.k8s.io/),
 ### Example:
 ```sh
 $ kubectl krew install carbonetes-scan
+Installing plugin: carbonetes-scan
+Installed plugin: carbonetes-scan
+\
+ | Use this plugin:
+ | 	kubectl carbonetes-scan
+ | Documentation:
+ | 	https://github.com/carbonetes/kubectl-carbonetes-scan
+ | Caveats:
+ | \
+ |  | You need to have a valid credentials at Carbonetes to execute this plugin.
+ |  | Doesn't have any credentials yet?
+ |  | Register here: https://carbonetes.com
+ | /
+/
 ```
 
 You can verify the installation using the commands `kubectl krew list` to see the list of installed plugins or `kubectl carbonetes-scan --version` to see the version of the installed `kubectl-carbonetes-scan`.
