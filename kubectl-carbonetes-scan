@@ -556,13 +556,13 @@ main() {
                   fi
                 done
 
-                # if [[ $found != "1" ]]; then
-                    # echo ""
-                    # echo "The image you want to scan is not found inside your cluster."
-                    # exit 1
-                # else
+                if [[ $found != "1" ]]; then
+                    echo ""
+                    echo "The image you want to scan is not found inside your cluster."
+                    exit 1
+                else
                     export REPO_IMAGE_TAG=$1
-                # fi
+                fi
                 shift
                 ;;
             -r | --registry)
