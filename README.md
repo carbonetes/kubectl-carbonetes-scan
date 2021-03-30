@@ -90,26 +90,34 @@ _\* = required inputs._
 
 You can install kubectl-carbonetes-scan using [Krew](https://krew.sigs.k8s.io/), a kubectl plugin manager. `Krew` itself is also a plugin on kubectl. You can easily [install](https://krew.sigs.k8s.io/docs/user-guide/setup/install/) it with only a few steps, available on `MacOS`, `Linux`, and `Windows`.
 
-### Example:
+### via Custom Plugin Index:
+* Add the `carbonetes` Index
+  ```sh
+  kubectl krew index add carbonetes https://github.com/carbonetes/carbonetes-kube-plugin.git
+  ```
+* Install `carbonetes-scan`
+  ```sh
+  kubectl krew install carbonetes/carbonetes-scan
+  ```
+
+### Download the Manifest:
 ```sh
-$ kubectl krew install carbonetes-scan
-Installing plugin: carbonetes-scan
-Installed plugin: carbonetes-scan
-\
- | Use this plugin:
- | 	kubectl carbonetes-scan
- | Documentation:
- | 	https://github.com/carbonetes/kubectl-carbonetes-scan
- | Caveats:
- | \
- |  | You need to have a valid credentials at Carbonetes to execute this plugin.
- |  | Doesn't have any credentials yet?
- |  | Register here: https://carbonetes.com
- | /
-/
+curl -sL https://raw.githubusercontent.com/carbonetes/kubectl-carbonetes-scan/main/.krew/carbonetes-scan.yaml > carbonetes-scan.yaml \
+  && kubectl krew install --manifest=carbonetes-scan.yaml
 ```
 
-You can verify the installation using the commands `kubectl krew list` to see the list of installed plugins or `kubectl carbonetes-scan --version` to see the version of the installed `kubectl-carbonetes-scan`.
+### Download the Binary:
+```sh
+  curl -LO https://github.com/carbonetes/kubectl-carbonetes-scan/archive/refs/tags/v1.1.0.tar.gz \
+  && tar xf v1.1.0.tar.gz kubectl-carbonetes-scan-1.1.0/kubectl-carbonetes-scan \
+  && chmod +x ./kubectl-carbonetes-scan-1.1.0/kubectl-carbonetes-scan \
+  && mv -i ./kubectl-carbonetes-scan-1.1.0/kubectl-carbonetes-scan /usr/local/bin/kubectl-carbonetes_scan \
+  && rm v1.1.0.tar.gz \
+  && rm -rf ./kubectl-carbonetes-scan-1.1.0
+```
+
+You can verify the installation using the commands `kubectl plugin list` to see the list of installed plugins or `kubectl carbonetes-scan --version` to see the version of the installed `kubectl-carbonetes-scan`.
+
 
 ## :email: Support
 To help with this plugin, or have an issue or feature request, please contact: [eng@carbonetes.com](eng@carbonetes.com)
