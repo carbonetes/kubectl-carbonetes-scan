@@ -9,7 +9,7 @@
 This repository provides `carbonetes-scan` container security scan tool for Kubernetes cluster.
 [Install &rarr;](#dvd-installation)
 
-**`carbonetes-scan`** provides comprehensive container analysis and policy evaluation as a fully managed service. Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA), license types, secrets and bill of materials.
+**`carbonetes-scan`** provides comprehensive container analysis and policy evaluation as a fully managed service. Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA), license types, malware, secrets and bill of materials.
 
 :pushpin: To know more about Carbonetes, check [our website](https://carbonetes.com).
 
@@ -26,7 +26,7 @@ Carbonetes Scan: Security Tool for kubectl and oc
 
 This plugin provides comprehensive container analysis and policy evaluation as a fully managed service.
 Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA),
-license types, secrets, and bill of materials.
+license types, malware, secrets, and bill of materials.
 
 Usage:
     kubectl carbonetes-scan [flags]
@@ -63,10 +63,10 @@ This plugin requires **Docker installation** and a valid **Carbonetes credential
 
 | Argument Name               | Description                                                  |
 | --------------------------- | ------------------------------------------------------------ |
-| registry \*                 | The registry uri is managed in Carbonetes. |
-| image \*                    | The image to be scan. |
-| username \*                 | The account username on Carbonetes. |
-| password \*                 | The account password on Carbonetes. |
+| registry \*                 | Registry Uri (Added in Carbonetes Web Application) |
+| image \*                    | The image to be scanned. |
+| username \*                 | The account username in Carbonetes. |
+| password \*                 | The account password in Carbonetes. |
 
 _\* = required inputs._
 
@@ -93,14 +93,14 @@ You can install kubectl-carbonetes-scan using [Krew](https://krew.sigs.k8s.io/),
 ### via [awesome-kubectl-plugins](https://github.com/ishantanu/awesome-kubectl-plugins)
 * Add awesome-kubectl-plugins to Krew
   ```sh
-  kubectl krew index add add awesome-kubectl-plugins https://github.com/ishantanu/awesome-kubectl-plugins
+  kubectl krew index add awesome-kubectl-plugins https://github.com/ishantanu/awesome-kubectl-plugins.git
   ```
 * Install carbonetes-scan
   ```sh
   kubectl krew install awesome-kubectl-plugins/carbonetes-scan
   ```
 
-### via Carbonetes Custom Plugin Index:
+### via [Carbonetes Custom Plugin Index](https://github.com/carbonetes/carbonetes-kube-plugin):
 * Add the Carbonetes Index
   ```sh
   kubectl krew index add carbonetes https://github.com/carbonetes/carbonetes-kube-plugin.git
