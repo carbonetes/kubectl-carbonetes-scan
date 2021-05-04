@@ -408,8 +408,6 @@ catchErrors() {
     echo "";
     echo "Image is not found in the registry";
   fi
-
-  exit 1
 }
 
 ##################################
@@ -521,8 +519,12 @@ is_running() {
     for p in "${phases[@]}";
       do
           if [[ "$p" != "Running" ]]; then
-              echo "There is no Pod in Running phase ($p)"
-              exit 1
+              if [[ "$p" == "Succeeded" ]]; then
+                  return
+              else
+                  echo "There is no Pod in Running phase ($p)"
+                  exit 1
+              fi
           fi
     done
 }
@@ -551,7 +553,7 @@ main() {
                 declare -a image
                 images=(${image[@]} $(kubectl get pod --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq))
                 for img in "${images[@]}"; do
-                  if [[ "$img" == "$1" ]]; then
+                  if [[ "$img" == *"$1"* ]]; then
                       export found="1"
                   fi
                 done
