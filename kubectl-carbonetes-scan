@@ -34,7 +34,7 @@ usage() {
 
 This plugin provides comprehensive container analysis and policy evaluation as a fully managed service.
 Carbonetes analyzes your container images for native code vulnerabilities, software composition analysis (SCA),
-license types, secrets, and bill of materials.
+license types, malware, secrets, and bill of materials.
 
 Usage:
     $SELF [flags]
@@ -551,8 +551,8 @@ main() {
                 # check if the specified image is existing inside the cluster
                 ################################################################
                 declare -a image
-                images=(${image[@]} $(kubectl get pod --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq))
-                for img in "${images[@]}"; do
+                containers=(${image[@]} $(kubectl get pod --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq))
+                for img in "${containers[@]}"; do
                   if [[ "$img" == *"$1"* ]]; then
                       export found="1"
                   fi
