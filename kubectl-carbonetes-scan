@@ -480,7 +480,7 @@ carbonetesScan() {
   ####################################################
   # Calling the wrapper API to execute the analysis
   ####################################################
-  analysisCheckerData=$(curl -X POST --header 'Content-Type:application/json' --data '{"registryUri":"'"${REGISTRY_URI}"'","repoImageTag":"'"$REPO_IMAGE_TAG"'","username":"'"$CARBONETES_USERNAME"'","password":"'"$CARBONETES_PASSWORD"'"}' 'https://api.carbonetes.com/api/v1/analysis/analyze')
+  analysisCheckerData=$(curl -X POST --header 'Content-Type:application/json' --data '{"registryUri":"'"${REGISTRY_URI}"'","repoImageTag":"'"$REPO_IMAGE_TAG"'","username":"'"$CARBONETES_USERNAME"'","password":"'"$CARBONETES_PASSWORD"'"}' 'https://api.carbonetes.com/api/v1/analysis/')
   
   #####################################################
   # Catch errors returned by the Wrapper
